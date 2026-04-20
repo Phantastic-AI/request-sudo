@@ -1,6 +1,8 @@
 package events_test
 
 import (
+	"bytes"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -35,5 +37,29 @@ func TestLogAppendAndReplayMaintainsHashChain(t *testing.T) {
 	}
 	if history[1].PrevHash != history[0].Hash {
 		t.Fatalf("replayed chain mismatch")
+	}
+}
+
+func TestReplayRejectsTamperedHash(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "events.jsonl")
+	log, err := events.NewLog(path)
+	if err != nil {
+		t.Fatalf("new log: %v", err)
+	}
+	createdDetails, _ := events.MarshalDetails(events.RequestCreatedDetails{Request: core.Request{ID: "req_1"}})
+	if _, err := log.Append(events.Event{RequestID: "req_1", Actor: core.Actor{Kind: "requester", ID: "alice"}, Type: events.TypeRequestCreated, Details: createdDetails}); err != nil {
+		t.Fatalf("append: %v", err)
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read: %v", err)
+	}
+	replaced := bytes.Replace(data, []byte("\"hash\":\""), []byte("\"hash\":\"deadbeef"), 1)
+	if err := os.WriteFile(path, replaced, 0o600); err != nil {
+		t.Fatalf("write tampered: %v", err)
+	}
+	_, err = events.NewLog(path)
+	if err == nil {
+		t.Fatal("expected tamper detection error")
 	}
 }

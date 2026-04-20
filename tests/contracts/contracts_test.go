@@ -359,3 +359,15 @@ func readJSON[T any](t *testing.T, relativePath string) T {
 	}
 	return out
 }
+
+func TestInstallerAndSmokeArtifactsExist(t *testing.T) {
+	for _, path := range []string{
+		filepath.Clean("../../scripts/install.sh"),
+		filepath.Clean("../../scripts/smoke-local.sh"),
+		filepath.Clean("../../packaging/systemd/request-sudod.service.tmpl"),
+	} {
+		if _, err := os.Stat(path); err != nil {
+			t.Fatalf("missing required artifact %s: %v", path, err)
+		}
+	}
+}

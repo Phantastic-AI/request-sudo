@@ -34,7 +34,7 @@ func TestSocketRoundTrip(t *testing.T) {
 	}
 	requestSock := filepath.Join(temp, "request.sock")
 	reviewSock := filepath.Join(temp, "review.sock")
-	server := socket.NewServer(svc, requestSock, reviewSock, []uint32{uint32(os.Geteuid())})
+	server := socket.NewServer(svc, requestSock, reviewSock, []uint32{999999}, []uint32{uint32(os.Getegid())})
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	go func() {

@@ -93,6 +93,7 @@ func (l *Log) replayUnlocked() ([]Event, error) {
 	defer file.Close()
 
 	var out []Event
+	var prevHash string
 	scanner := bufio.NewScanner(file)
 	buf := make([]byte, 0, 64*1024)
 	scanner.Buffer(buf, 2*1024*1024)
@@ -105,7 +106,18 @@ func (l *Log) replayUnlocked() ([]Event, error) {
 		if err := json.Unmarshal(line, &event); err != nil {
 			return nil, fmt.Errorf("decode event: %w", err)
 		}
+		if event.PrevHash != prevHash {
+			return nil, fmt.Errorf("hash chain mismatch for %s: prev=%q want=%q", event.EventID, event.PrevHash, prevHash)
+		}
+		wantHash, err := hashEvent(Event{EventID: event.EventID, PrevHash: event.PrevHash, RequestID: event.RequestID, Timestamp: event.Timestamp, Actor: event.Actor, Type: event.Type, Details: event.Details})
+		if err != nil {
+			return nil, fmt.Errorf("rehash event: %w", err)
+		}
+		if event.Hash != wantHash {
+			return nil, fmt.Errorf("event hash mismatch for %s", event.EventID)
+		}
 		out = append(out, event)
+		prevHash = event.Hash
 	}
 	if err := scanner.Err(); err != nil {
 		return nil, err

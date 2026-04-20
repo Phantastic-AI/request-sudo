@@ -1,0 +1,15 @@
+[Unit]
+Description=request-sudo daemon
+After=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+RuntimeDirectory=request-sudo
+StateDirectory=request-sudo
+ExecStart={{BINDIR}}/request-sudod --request-socket {{REQUEST_SOCKET}} --review-socket {{REVIEW_SOCKET}} --event-log {{EVENT_LOG}} --review-uids {{REVIEW_UIDS}} --review-gids {{REVIEW_GIDS}}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -22,18 +22,24 @@ type Server struct {
 	requestSocketPath string
 	reviewSocketPath  string
 	reviewUIDs        map[uint32]struct{}
+	reviewGIDs        map[uint32]struct{}
 }
 
-func NewServer(service *broker.Service, requestSocketPath, reviewSocketPath string, reviewUIDs []uint32) *Server {
-	allow := make(map[uint32]struct{}, len(reviewUIDs))
+func NewServer(service *broker.Service, requestSocketPath, reviewSocketPath string, reviewUIDs []uint32, reviewGIDs []uint32) *Server {
+	allowUIDs := make(map[uint32]struct{}, len(reviewUIDs))
 	for _, uid := range reviewUIDs {
-		allow[uid] = struct{}{}
+		allowUIDs[uid] = struct{}{}
+	}
+	allowGIDs := make(map[uint32]struct{}, len(reviewGIDs))
+	for _, gid := range reviewGIDs {
+		allowGIDs[gid] = struct{}{}
 	}
 	return &Server{
 		service:           service,
 		requestSocketPath: requestSocketPath,
 		reviewSocketPath:  reviewSocketPath,
-		reviewUIDs:        allow,
+		reviewUIDs:        allowUIDs,
+		reviewGIDs:        allowGIDs,
 	}
 }
 
@@ -119,7 +125,7 @@ func (s *Server) dispatch(ctx context.Context, lane string, request protocol.Req
 		if lane != "review" {
 			return protocol.Response{Status: string(core.StatusRejected), Message: "approve is only allowed on review socket"}, nil
 		}
-		if !s.reviewAllowed(peer.UID) {
+		if !s.reviewAllowed(peer.UID, peer.GID) {
 			return protocol.Response{RequestID: request.RequestID, Status: string(core.StatusRejected), Message: "peer uid is not allowed on review socket"}, nil
 		}
 		return s.service.Approve(ctx, broker.ReviewInput{RequestID: request.RequestID, Approver: request.Approver, TOTP: request.TOTP})
@@ -127,7 +133,7 @@ func (s *Server) dispatch(ctx context.Context, lane string, request protocol.Req
 		if lane != "review" {
 			return protocol.Response{Status: string(core.StatusRejected), Message: "deny is only allowed on review socket"}, nil
 		}
-		if !s.reviewAllowed(peer.UID) {
+		if !s.reviewAllowed(peer.UID, peer.GID) {
 			return protocol.Response{RequestID: request.RequestID, Status: string(core.StatusRejected), Message: "peer uid is not allowed on review socket"}, nil
 		}
 		return s.service.Deny(ctx, broker.ReviewInput{RequestID: request.RequestID, Approver: request.Approver, Reason: request.Reason})
@@ -136,9 +142,17 @@ func (s *Server) dispatch(ctx context.Context, lane string, request protocol.Req
 	}
 }
 
-func (s *Server) reviewAllowed(uid uint32) bool {
-	_, ok := s.reviewUIDs[uid]
-	return ok
+func (s *Server) reviewAllowed(uid, gid uint32) bool {
+	if uid == 0 {
+		return true
+	}
+	if _, ok := s.reviewUIDs[uid]; ok {
+		return true
+	}
+	if _, ok := s.reviewGIDs[gid]; ok {
+		return true
+	}
+	return false
 }
 
 func listenSocket(path string, mode os.FileMode) (*net.UnixListener, error) {

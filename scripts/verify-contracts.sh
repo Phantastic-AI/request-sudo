@@ -14,6 +14,9 @@ required_files=(
   "$ROOT/docs/SMOKE_PATH.md"
   "$ROOT/docs/VERIFICATION.md"
   "$ROOT/scripts/verify-contracts.sh"
+  "$ROOT/scripts/install.sh"
+  "$ROOT/scripts/smoke-local.sh"
+  "$ROOT/packaging/systemd/request-sudod.service.tmpl"
   "$CONTRACTS_DIR/contracts_test.go"
 )
 
@@ -42,3 +45,7 @@ go test ./...
 
 echo '[verify-contracts] go vet ./...'
 go vet ./...
+
+
+echo "[verify-contracts] smoke-local"
+"$ROOT/scripts/smoke-local.sh"

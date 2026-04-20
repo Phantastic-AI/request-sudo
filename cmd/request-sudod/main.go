@@ -22,6 +22,7 @@ func main() {
 		reviewSocket  = flag.String("review-socket", "/run/request-sudo/review.sock", "path to review Unix socket")
 		eventLog      = flag.String("event-log", "/var/lib/request-sudo/events.jsonl", "path to append-only event log")
 		reviewUIDs    = flag.String("review-uids", strconv.Itoa(os.Geteuid()), "comma-separated list of UIDs allowed on the review socket")
+		reviewGIDs    = flag.String("review-gids", strconv.Itoa(os.Getegid()), "comma-separated list of GIDs allowed on the review socket")
 	)
 	flag.Parse()
 
@@ -33,7 +34,7 @@ func main() {
 	if err != nil {
 		fail(err)
 	}
-	server := socket.NewServer(service, *requestSocket, *reviewSocket, parseUIDs(*reviewUIDs))
+	server := socket.NewServer(service, *requestSocket, *reviewSocket, parseIDs(*reviewUIDs), parseIDs(*reviewGIDs))
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -43,7 +44,7 @@ func main() {
 	}
 }
 
-func parseUIDs(raw string) []uint32 {
+func parseIDs(raw string) []uint32 {
 	parts := strings.Split(raw, ",")
 	out := make([]uint32, 0, len(parts))
 	for _, part := range parts {

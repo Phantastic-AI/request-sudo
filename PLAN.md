@@ -1,270 +1,67 @@
 # request-sudo — MVP Plan
 
-_Last updated: 2026-04-19 UTC_
+_Last updated: 2026-04-20 UTC_
 
 ## The decision
-Start fresh.
+Start fresh and keep request-sudo as the canonical product name.
 
-Do not turn the existing plugin repo into the successor.
-Use it as reference only.
+Use the older plugin repo only as reference.
 
-The successor should be a **literate permission broker** with:
+## The MVP
+
+The MVP should deliver:
 - simple request UX
 - readable approval UX
 - exact one-time privileged execution
-- TOTP-backed approval confirmation bound to a specific request id
-- local manual fallback
+- local manual approval first
+- immutable event history
+- installer path that works
 
----
-
-## Why this is the right MVP
-
-Because it keeps the product understandable.
-
-We want the human experience to be:
-- someone asks for one privileged action
-- the system describes it clearly
-- the human approves or denies simply
-- the system runs exactly that action once
-
-Important: the executed argv is the requester's exact submitted argv. The system may rewrite only the human-readable description, never the command that runs.
-
-That is the product.
-
----
-
-## Principles
-
-1. **Readable first**
-2. **Exact execution**
-3. **Immutable history**
-4. **Only broker runs as root**
-5. **Fallbacks from day one**
-6. **OpenClaw optional**
-
----
-
-## The shape of the MVP
-
-### User-facing request
-Example:
-
-```bash
-request-sudo systemctl restart app-moltpod-backend
-```
-
-### Human-facing approval
-The approver should see:
-- who is asking
-- what they want to do
-- why
-- likely effect
-- risk
-- approve / deny
-
-Approval must bind to a request id plus the exact execution digest, not just a generic approval gesture.
-
-### Trust confirmation
-TOTP confirms the approver identity.
-
-### Execution
-The broker runs the exact action once.
-
-### Audit
-Everything is recorded in immutable history.
-
----
-
-## Roles and permissions
+## Core shape
 
 ### Requester
-- can request
-- cannot approve
-- cannot execute root directly
-- cannot read or control approver TOTP secrets
+Uses `request-sudo`.
+Gets back a request ID and status, not root.
 
 ### Approver
-- can approve or deny if policy allows
-- must authenticate as a trusted human
-- should not be confused with the requester runtime
-- must be distinct from the requester
+Uses `request-sudoctl` locally in the first slice.
+Remote transport can come later.
 
 ### Broker
-- runs as root
-- sole privileged executor
+`request-sudod` is the only privileged writer/executor.
 
-### Adapter / transport
-- carries approval interaction only
-- does not execute privileged actions
+## Current implementation phases
 
-This is how we avoid user and permission clashes.
+### Phase 1 — protocol and skeleton
+Done.
 
----
+### Phase 2 — local runnable slice
+Done.
 
-## Routing policy
+### Phase 3 — hardening + installer
+Current focus:
+- replay tamper verification
+- review-socket auth tightening
+- automated smoke path
+- installer + systemd unit
 
-Different local users may trigger requests on this machine.
-So the system needs a simple routing policy.
-
-### Rule
-The requester does **not** choose the destination approver.
-
-### Policy decides
-Examples:
-- `openclaw` → operator approver set
-- `leastpriv` → operator approver set
-- unknown users → no remote route, manual local fallback only
-
-This keeps routing deterministic and safe.
-
----
-
-## TOTP in plain English
-
-TOTP is the first strong approval factor.
-
-Why we want it:
-- no SMS dependency as the core path
-- no phone bottleneck as the main design
-- multiple trusted approvers can exist
-- clean local security story
-
-### Important nuance
-TOTP is **not** the product experience.
-It is the confirmation step behind the approval.
-
-It must be tied to a specific request id so one TOTP code cannot silently approve the wrong pending request.
-
-So the user should feel:
-- readable approval prompt
-- simple approve / deny step
-- TOTP confirms that the approver is real
-
----
-
-## Fallbacks
-
-We need fallbacks because the human cannot always use the same transport.
-
-### MVP fallback
-Local manual approval path.
-
-That means:
-- same readable request summary
-- same exact-action binding
-- same audit trail
-- no dependency on SMS or external transport
-
----
-
-## Storage model
-
-### Canon
-Append-only event log.
-This is the source of truth.
-Use hash-chained entries so tampering is detectable.
-
-### Projection
-Rebuildable current-state view.
-This exists for fast lookup only.
-
-This gives us:
-- immutability
-- queryability
-- recoverability
-
----
-
-## FBP usage
-
-Use the flow-based-programming spec as a **workflow description layer**, not the broker runtime.
-
-Good for:
-- approval flow diagrams
-- adapter flow design
-- future visual tooling
-
-Not for:
-- replacing the daemon core
-- replacing the event log
-- replacing the exact execution path
-
----
-
-## MVP phases
-
-### Phase 1 — shape the core
-- define request shape
-- define approval summary shape
-- define immutable event format
-- define projection model
-- define role separation clearly
-
-### Phase 2 — local working slice
-- request command works
-- broker records request
-- local manual approval works
-- broker executes exact action once
-- immutable log is written
-- projection rebuild works
-
-### Phase 3 — TOTP-backed approval
-- approver identity model is added
-- TOTP confirmation is added and tied to a specific request id
-- self-approval is blocked by identity separation and secret placement
-- audit trail records the approval factor cleanly
-
-### Phase 4 — first remote convenience transport
-- only after the core is solid
-- transport should remain outside execution trust boundary
-
----
+### Phase 4 — future transport work
+Possible future work:
+- SMS/chat approval flow with short case-insensitive approval tokens such as `A7K`
+- queue summaries and delayed backlog notices
+- transport-specific approval UX
 
 ## Verification
 
-The MVP is good when we can prove this:
+The repo is in good shape when all of these pass together:
+- `go test ./...`
+- `go build ./...`
+- `go vet ./...`
+- `./scripts/verify-contracts.sh`
+- installer verification
+- automated local smoke path
 
-1. least-privilege user requests one privileged action
-2. request is rewritten into a readable approval summary
-3. approver sees that summary
-4. approver confirms with TOTP
-5. broker executes the exact action once
-6. replay fails
-7. denial prevents execution
-8. local fallback works if remote transport is unavailable
-9. immutable log reconstructs final state correctly
-
----
-
-## What we are deliberately not doing yet
-
-- not plugin-first
-- not Airlock-first
-- not weird operator incantations as the product surface
-- not remote fleet execution
-- not passive interception as the core UX
-
----
-
-## Recommendation
-
-Build the first version around clarity.
-
-That means:
-- natural request
-- readable approval
-- TOTP-backed human confirmation
-- exact one-time execution
-- immutable history
-- local fallback
-
-That is the winning MVP.
-
-
-## Concrete defaults
-
-- request TTL: 5 minutes
-- one-time approval nonce: yes
-- second execution of same request id: forbidden
-- routing policy file: root-owned
-- audit log permissions: root-readable only
+## Remaining follow-up risks
+- tamper evidence should eventually be enforced everywhere it matters
+- review policy may need stronger role modeling over time
+- transport approval flow still needs a dedicated phase after local-first stability is proven

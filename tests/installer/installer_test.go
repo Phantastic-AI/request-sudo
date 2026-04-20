@@ -40,7 +40,7 @@ func TestInstallScriptInstallsBinariesAndUnitIntoTempRoot(t *testing.T) {
 		t.Fatalf("read unit: %v", err)
 	}
 	content := string(data)
-	for _, snippet := range []string{"request-sudod", "--review-uids 1234", "--review-gids 5678", stateDir + "/events.jsonl"} {
+	for _, snippet := range []string{"request-sudod", "--review-uids 1234", "--review-gids 5678", stateDir + "/events.jsonl", "NoNewPrivileges=true", "PrivateTmp=true", "ProtectSystem=strict"} {
 		if !strings.Contains(content, snippet) {
 			t.Fatalf("unit missing %q\n%s", snippet, content)
 		}

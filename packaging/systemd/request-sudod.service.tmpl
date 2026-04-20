@@ -10,6 +10,13 @@ RuntimeDirectory=request-sudo
 StateDirectory=request-sudo
 ExecStart={{BINDIR}}/request-sudod --request-socket {{REQUEST_SOCKET}} --review-socket {{REVIEW_SOCKET}} --event-log {{EVENT_LOG}} --review-uids {{REVIEW_UIDS}} --review-gids {{REVIEW_GIDS}}
 Restart=on-failure
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
 
 [Install]
 WantedBy=multi-user.target

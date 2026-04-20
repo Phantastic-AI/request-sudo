@@ -47,7 +47,7 @@ func TestSocketRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("submit: %v", err)
 	}
-	approve, err := socket.Call(context.Background(), reviewSock, protocol.Request{Action: protocol.ActionReviewApprove, RequestID: submit.RequestID, Approver: core.Actor{Kind: "local", ID: "root"}, TOTP: "654321"})
+	approve, err := socket.Call(context.Background(), reviewSock, protocol.Request{Action: protocol.ActionReviewApprove, RequestID: submit.RequestID, Approver: core.Actor{Kind: "local", ID: "root"}, ApprovalCode: "A7K"})
 	if err != nil {
 		t.Fatalf("approve: %v", err)
 	}

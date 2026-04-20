@@ -36,12 +36,13 @@ func handleApprove(ctx context.Context, args []string) {
 	socketPath := fs.String("socket", "/run/request-sudo/review.sock", "review socket path")
 	approverKind := fs.String("approver-kind", "local", "approver identity kind")
 	approverID := fs.String("approver-id", currentUser(), "approver identity id")
-	totp := fs.String("totp", "", "optional TOTP code")
+	approvalCode := fs.String("approval-code", "", "optional approval code")
+	codeAlias := fs.String("code", "", "optional approval code alias")
 	fs.Parse(args)
 	if fs.NArg() != 1 {
 		failf("approve requires exactly one request id")
 	}
-	resp, err := socket.Call(ctx, *socketPath, protocol.Request{Action: protocol.ActionReviewApprove, RequestID: fs.Arg(0), Approver: core.Actor{Kind: *approverKind, ID: *approverID}, TOTP: *totp})
+	resp, err := socket.Call(ctx, *socketPath, protocol.Request{Action: protocol.ActionReviewApprove, RequestID: fs.Arg(0), Approver: core.Actor{Kind: *approverKind, ID: *approverID}, ApprovalCode: chooseCode(*approvalCode, *codeAlias)})
 	if err != nil {
 		fail(err)
 	}
@@ -94,4 +95,11 @@ func fail(err error) {
 func failf(format string, args ...any) {
 	fmt.Fprintf(os.Stderr, format+"\n", args...)
 	os.Exit(1)
+}
+
+func chooseCode(primary, alias string) string {
+	if primary != "" {
+		return primary
+	}
+	return alias
 }

@@ -44,10 +44,10 @@ type SubmitInput struct {
 }
 
 type ReviewInput struct {
-	RequestID string
-	Approver  core.Actor
-	TOTP      string
-	Reason    string
+	RequestID    string
+	Approver     core.Actor
+	ApprovalCode string
+	Reason       string
 }
 
 func WithClock(now func() time.Time) Option {
@@ -171,7 +171,7 @@ func (s *Service) Approve(ctx context.Context, input ReviewInput) (protocol.Resp
 	if err := validateApprover(input.Approver, snap.Request.Requester); err != nil {
 		return protocol.Response{RequestID: input.RequestID, Status: string(core.StatusRejected), Message: err.Error()}, nil
 	}
-	details, err := events.MarshalDetails(events.ApprovalDetails{Approver: input.Approver, TOTP: input.TOTP})
+	details, err := events.MarshalDetails(events.ApprovalDetails{Approver: input.Approver, ApprovalCode: input.ApprovalCode})
 	if err != nil {
 		return protocol.Response{}, err
 	}

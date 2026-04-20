@@ -6,8 +6,8 @@ SYSTEMD_DIR="/etc/systemd/system"
 STATE_DIR="/var/lib/request-sudo"
 REQUEST_SOCKET="/run/request-sudo/request.sock"
 REVIEW_SOCKET="/run/request-sudo/review.sock"
-REVIEW_UIDS="$(id -u)"
-REVIEW_GIDS="$(id -g)"
+REVIEW_UIDS="0"
+REVIEW_GIDS=""
 BUILD_DIR=""
 DRY_RUN=0
 

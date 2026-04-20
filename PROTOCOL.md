@@ -4,7 +4,7 @@ _Last updated: 2026-04-20 UTC_
 
 ## 1. Contract overview
 
-This document freezes the first concrete contracts for the successor.
+This document freezes the first concrete contracts for request-sudo.
 
 It answers:
 - what `request-sudo` sends
@@ -62,7 +62,7 @@ Allowed callers:
 Broker checks:
 - peer uid
 - peer gid
-- service user allowlist or root
+- service-user allowlist and/or root-owned install-time policy
 
 ### Important rule
 The requester socket and review socket must never be treated as equivalent.
@@ -235,7 +235,7 @@ This is the approval path used by `request-sudoctl` and later by adapters.
     "kind": "local",
     "id": "root"
   },
-  "totp": "482911"
+  "approval_code": "A7K"
 }
 ```
 
@@ -273,21 +273,21 @@ or
 
 ---
 
-## 8. TOTP contract
+## 8. Approval token contract
 
-TOTP is not sufficient by itself.
+For the future SMS/chat path, a short approval token is not sufficient by itself.
 
 Approval must bind to:
 - `request_id`
 - approver identity
-- current valid TOTP code
+- current valid approval token when a transport uses one
 
 ### Meaning
 This is valid:
-- approve request `req_123` with TOTP `482911`
+- approve request `req_123` with approval token `A7K`
 
 This is **not** valid:
-- just present `482911` with no request binding
+- just present `A7K` with no request binding
 
 ### Broker verification
 Broker must verify:
@@ -295,7 +295,7 @@ Broker must verify:
 - request is not expired
 - approver is allowed
 - approver is not requester
-- TOTP matches that approver
+- approval token or local review proof matches that approval path
 - this approval has not already been consumed
 
 ---

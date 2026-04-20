@@ -33,7 +33,7 @@ func TestServiceSubmitApproveExecuteAndReplay(t *testing.T) {
 	if err != nil {
 		t.Fatalf("submit: %v", err)
 	}
-	approve, err := svc.Approve(ctx, broker.ReviewInput{RequestID: submit.RequestID, Approver: core.Actor{Kind: "local", ID: "root"}, TOTP: "123456"})
+	approve, err := svc.Approve(ctx, broker.ReviewInput{RequestID: submit.RequestID, Approver: core.Actor{Kind: "local", ID: "root"}, ApprovalCode: "A7K"})
 	if err != nil {
 		t.Fatalf("approve: %v", err)
 	}

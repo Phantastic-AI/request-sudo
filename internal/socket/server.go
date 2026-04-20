@@ -128,7 +128,7 @@ func (s *Server) dispatch(ctx context.Context, lane string, request protocol.Req
 		if !s.reviewAllowed(peer.UID, peer.GID) {
 			return protocol.Response{RequestID: request.RequestID, Status: string(core.StatusRejected), Message: "peer uid is not allowed on review socket"}, nil
 		}
-		return s.service.Approve(ctx, broker.ReviewInput{RequestID: request.RequestID, Approver: request.Approver, TOTP: request.TOTP})
+		return s.service.Approve(ctx, broker.ReviewInput{RequestID: request.RequestID, Approver: request.Approver, ApprovalCode: request.ApprovalCode})
 	case protocol.ActionReviewDeny:
 		if lane != "review" {
 			return protocol.Response{Status: string(core.StatusRejected), Message: "deny is only allowed on review socket"}, nil
@@ -143,9 +143,6 @@ func (s *Server) dispatch(ctx context.Context, lane string, request protocol.Req
 }
 
 func (s *Server) reviewAllowed(uid, gid uint32) bool {
-	if uid == 0 {
-		return true
-	}
 	if _, ok := s.reviewUIDs[uid]; ok {
 		return true
 	}

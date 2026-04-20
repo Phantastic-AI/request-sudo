@@ -35,8 +35,8 @@ type RequestCreatedDetails struct {
 }
 
 type ApprovalDetails struct {
-	Approver core.Actor `json:"approver"`
-	TOTP     string     `json:"totp,omitempty"`
+	Approver     core.Actor `json:"approver"`
+	ApprovalCode string     `json:"approval_code,omitempty"`
 }
 
 type DenialDetails struct {

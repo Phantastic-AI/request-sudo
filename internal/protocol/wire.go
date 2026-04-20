@@ -11,14 +11,14 @@ const (
 )
 
 type Request struct {
-	Action    string     `json:"action"`
-	Argv      []string   `json:"argv,omitempty"`
-	Reason    string     `json:"reason,omitempty"`
-	Mode      core.Mode  `json:"mode,omitempty"`
-	RequestID string     `json:"request_id,omitempty"`
-	Approver  core.Actor `json:"approver,omitempty"`
-	TOTP      string     `json:"totp,omitempty"`
-	Cwd       string     `json:"cwd,omitempty"`
+	Action       string     `json:"action"`
+	Argv         []string   `json:"argv,omitempty"`
+	Reason       string     `json:"reason,omitempty"`
+	Mode         core.Mode  `json:"mode,omitempty"`
+	RequestID    string     `json:"request_id,omitempty"`
+	Approver     core.Actor `json:"approver,omitempty"`
+	ApprovalCode string     `json:"approval_code,omitempty"`
+	Cwd          string     `json:"cwd,omitempty"`
 }
 
 type Response struct {

@@ -2,6 +2,9 @@
 
 This is the clean successor workspace.
 
+request-sudo is the product-facing name.
+The broker remains the internal architectural role name: the trusted root-owned component that records requests, verifies approvals, and executes approved actions.
+
 Purpose:
 - design and build the next-generation lease broker as a standalone Linux CLI + local root-owned daemon
 - keep it separate from the current OpenClaw plugin implementation in `../openclaw-lease-broker`

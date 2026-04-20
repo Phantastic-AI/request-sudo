@@ -33,6 +33,9 @@ Not a bag of hidden magic.
 
 The successor is a **literate permission broker** for Linux.
 
+The product-facing name is `request-sudo`.
+The internal word `broker` is intentional: it names the trusted root-owned component inside the system, not an old leftover brand.
+
 It exists to let a normally unprivileged user or agent ask for one privileged action, get a clean human approval flow, and then run exactly that action once.
 
 The approval should feel readable.

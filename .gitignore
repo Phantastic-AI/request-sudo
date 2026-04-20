@@ -5,3 +5,4 @@ coverage.out
 /dist/
 /tmp/
 .DS_Store
+.omc/

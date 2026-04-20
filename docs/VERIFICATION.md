@@ -44,6 +44,12 @@ gofmt -w ./cmd ./internal ./tests
 go test ./...
 ```
 
+### Build sanity
+
+```bash
+go build ./...
+```
+
 ### Race-sensitive pass
 
 ```bash
@@ -74,6 +80,7 @@ Use this order as the codebase grows:
 ```bash
 ./scripts/verify-contracts.sh
 go test ./...
+go build ./...
 go test -run Smoke ./...
 ```
 
@@ -89,6 +96,7 @@ Verification:
 - PASS docs presence: <command> -> <result>
 - PASS format: <command> -> <result>
 - PASS tests: <command> -> <result>
+- PASS build: <command> -> <result>
 - PASS vet: <command> -> <result>
 - PASS smoke path: <command> -> <result>
 ```

@@ -3,7 +3,7 @@
 _Last updated: 2026-04-20 UTC_
 
 This document records the current code-quality and delivery findings for the successor workspace.
-It is intentionally narrow: review the current phase-1 shape against the frozen design, then call out gaps that should block or guide the next implementation pass.
+It is intentionally narrow: review the current phase-1 shape against the frozen design, then call out the highest-value follow-up gaps.
 
 ## What is already in good shape
 
@@ -24,6 +24,26 @@ Those documents agree on the main trust boundaries:
 - approval binds to exact execution context
 - durable state comes from an append-only event log
 - projection is rebuildable and must never become a hidden source of truth
+
+### Phase-1 Go skeleton now exists
+
+The workspace now contains the expected implementation skeleton:
+
+```text
+cmd/
+internal/
+```
+
+The current implementation covers the phase-1 center of gravity:
+
+- separate requester and review Unix sockets
+- single-writer broker service
+- append-only JSONL event log with per-entry hash chaining
+- rebuildable in-memory projection
+- submit / status / approve / deny / execute flow
+- crash-recovery handling for requests left in `executing`
+
+That means the workspace is no longer docs-only; there is now a concrete runtime slice to review.
 
 ### Contract-test scaffold already exists
 
@@ -52,71 +72,70 @@ Together they cover review scope, smoke path, verification order, and current ga
 
 ## Current gaps
 
-### Gap 1: phase-1 Go skeleton is not in this workspace yet
+### Gap 1: replay does not verify tamper evidence yet
 
-The frozen design calls for Go requester/daemon skeletons and internal packages.
-At review time, the workspace still does not contain the expected Go source tree such as:
+`internal/events/log.go` writes hash-chained events, but `Replay()` currently decodes lines without recomputing and validating:
 
-```text
-cmd/
-internal/
-```
+- each event hash
+- each `prev_hash` link
 
 Impact:
 
-- no actual broker core exists yet in this workspace
-- smoke-path docs are specification-only today
-- verification currently proves contract fixtures, not the broker runtime
+- the log is hash-chained, but tamper evidence is not enforced during replay
+- a corrupted or edited log could be accepted unless a separate verifier is added
 
-### Gap 2: no root git repository is present
+### Gap 2: review-socket authorization is narrower than the frozen protocol
 
-`/srv/moltpod/security/lease-broker-successor` is not currently a git repo.
+`internal/socket/server.go` correctly splits request and review lanes and checks peer UID on the review socket.
+However, `PROTOCOL.md` describes review-path checks in terms of:
 
-Impact:
+- peer uid
+- peer gid
+- service-user allowlist or root
 
-- worker commit protocol cannot be completed here
-- task completion evidence can be produced, but the required commit artifact cannot
-- integration will need either repo initialization or migration into the intended tracked repo
-
-This is a delivery blocker, not a design blocker.
-
-### Gap 3: current verification is contract-first, not runtime-first
-
-`./scripts/verify-contracts.sh` is a useful baseline, but it currently validates only the fixture/test scaffold under `tests/contracts/`.
+Current code enforces only a UID allowlist.
 
 Impact:
 
-- it does not yet prove socket binding, peer-credential capture, append-only writes, or one-time execution against real code
-- runtime verification must expand once `cmd/lb` and `cmd/lbd` exist
+- the trust boundary exists, but it is still slimmer than the protocol contract
+- future hardening should decide whether GID- and role-based review checks are required for phase 1 or phase 2
 
-### Gap 4: review socket trust rules are specified but not implemented here
+### Gap 3: automated verification still trails the available runtime slice
 
-`PROTOCOL.md` clearly separates `/run/lb/request.sock` and `/run/lb/review.sock`.
-Until runtime code lands, there is no enforcement evidence for:
+The workspace now has real Go code plus focused unit tests, but the default docs still rely heavily on:
 
-- requester peer separation
-- approver allowlist behavior
-- prevention of review-path spoofing from the requester side
+- contract-fixture checks
+- package tests
+- manually described smoke evidence
+
+Impact:
+
+- the implementation is demonstrable, but the repeatable verification path could be tighter
+- adding an automated smoke script around temporary sockets/runtime paths would reduce drift between docs and executable proof
+
+### Gap 4: review coverage is stronger on happy-path mechanics than on adversarial cases
+
+Current tests and fixtures cover core lifecycle behavior well, but the most security-sensitive follow-up checks should keep expanding around:
+
+- review-socket spoofing attempts
+- tampered event-log replay
+- denial / revoke / recovery edge cases across restart boundaries
+- mismatch between documented trust rules and enforced runtime checks
 
 ## Recommended next actions
 
-1. Land the Go skeleton in this workspace with separate request/review listeners.
-2. Implement append-only event writing before adding remote transports.
-3. Rebuild projection strictly from event replay and add tests for recovery from `executing`.
-4. Extend `scripts/verify-contracts.sh` or add a sibling script once runtime code exists so verification covers:
-   - `go test ./...`
-   - `go test -race ./...`
-   - `go vet ./...`
-   - a temporary-dir smoke run for the local manual approval path
-5. Fix the repository bootstrap issue so worker outputs can be committed under the required lore protocol.
+1. Validate the event hash chain during replay, not only during append.
+2. Decide whether phase 1 should enforce review-socket GID/service-user rules in addition to UID allowlisting.
+3. Add an automated smoke runner for the local manual approval path against a temporary runtime directory.
+4. Expand tests around tampered logs, denied/rejected paths, and recovery edge cases.
 
 ## Review verdict
 
-Current phase-1 documentation and contract scaffolding are directionally sound and aligned with the frozen design.
-The main remaining risks are execution risks rather than design risks:
+Current phase-1 documentation, runtime skeleton, and verification scaffolding are aligned on the main product shape.
+The main remaining risks are now hardening and verification-depth risks rather than missing-foundation risks:
 
-- missing Go implementation in this workspace
-- missing runtime verification
-- missing git repository for required task commits
+- replay does not yet verify tamper evidence
+- review-socket enforcement is narrower than the full protocol wording
+- automated smoke coverage can be stronger
 
-Until those gaps close, this lane should be treated as **docs-and-contracts ready, runtime not yet demonstrated**.
+At this point the lane should be treated as **runtime demonstrated, but security/verification hardening still in progress**.

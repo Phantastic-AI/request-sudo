@@ -1,6 +1,6 @@
 package protocol
 
-import "lease-broker-successor/internal/core"
+import "request-sudo/internal/core"
 
 const (
 	ActionRequestSubmit  = "request.submit"

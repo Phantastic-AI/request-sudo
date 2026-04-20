@@ -29,7 +29,7 @@ Build the smallest concrete slice that proves the successor shape:
 
 ### Single writer
 
-`lbd` is the only writer for durable state.
+`request-sudod` is the only writer for durable state.
 
 That means:
 
@@ -49,8 +49,8 @@ Human-readable summaries may be rewritten for clarity, but the executed command 
 
 Phase 1 should keep these boundaries explicit:
 
-- `/run/lb/request.sock` for low-privilege callers
-- `/run/lb/review.sock` for trusted review tooling
+- `/run/request-sudo/request.sock` for low-privilege callers
+- `/run/request-sudo/review.sock` for trusted review tooling
 
 Do not collapse both paths into one listener during the skeleton stage.
 
@@ -66,7 +66,7 @@ This is a review target, not a frozen source tree. Keep names close unless there
 ```text
 cmd/
   lb/
-  lbd/
+  request-sudod/
 internal/
   approval/
   events/

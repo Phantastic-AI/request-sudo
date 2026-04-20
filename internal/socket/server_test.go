@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"lease-broker-successor/internal/broker"
-	"lease-broker-successor/internal/core"
-	"lease-broker-successor/internal/events"
-	"lease-broker-successor/internal/protocol"
-	"lease-broker-successor/internal/socket"
+	"request-sudo/internal/broker"
+	"request-sudo/internal/core"
+	"request-sudo/internal/events"
+	"request-sudo/internal/protocol"
+	"request-sudo/internal/socket"
 )
 
 type fakeExecutor struct{}

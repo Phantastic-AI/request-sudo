@@ -8,9 +8,9 @@ import (
 	"os"
 	"time"
 
-	"lease-broker-successor/internal/core"
-	"lease-broker-successor/internal/protocol"
-	"lease-broker-successor/internal/socket"
+	"request-sudo/internal/core"
+	"request-sudo/internal/protocol"
+	"request-sudo/internal/socket"
 )
 
 func main() {
@@ -34,7 +34,7 @@ func main() {
 
 func handleRequest(ctx context.Context, args []string) {
 	fs := flag.NewFlagSet("request", flag.ExitOnError)
-	socketPath := fs.String("socket", "/run/lb/request.sock", "request socket path")
+	socketPath := fs.String("socket", "/run/request-sudo/request.sock", "request socket path")
 	reason := fs.String("reason", "", "human-readable reason")
 	mode := fs.String("mode", string(core.ModePoll), "request mode: poll or wait")
 	cwd := fs.String("cwd", mustGetwd(), "execution cwd to freeze into the digest")
@@ -52,7 +52,7 @@ func handleRequest(ctx context.Context, args []string) {
 
 func handleStatus(ctx context.Context, args []string) {
 	fs := flag.NewFlagSet("status", flag.ExitOnError)
-	socketPath := fs.String("socket", "/run/lb/request.sock", "request socket path")
+	socketPath := fs.String("socket", "/run/request-sudo/request.sock", "request socket path")
 	fs.Parse(args)
 	if fs.NArg() != 1 {
 		failf("status requires exactly one request id")
@@ -66,7 +66,7 @@ func handleStatus(ctx context.Context, args []string) {
 
 func handleExecute(ctx context.Context, args []string) {
 	fs := flag.NewFlagSet("execute", flag.ExitOnError)
-	socketPath := fs.String("socket", "/run/lb/request.sock", "request socket path")
+	socketPath := fs.String("socket", "/run/request-sudo/request.sock", "request socket path")
 	fs.Parse(args)
 	if fs.NArg() != 1 {
 		failf("execute requires exactly one request id")
@@ -95,7 +95,7 @@ func mustGetwd() string {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: lb <request|status|execute> [args]")
+	fmt.Fprintln(os.Stderr, "usage: request-sudo <request|status|execute> [args]")
 	os.Exit(2)
 }
 

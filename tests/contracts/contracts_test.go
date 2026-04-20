@@ -187,8 +187,8 @@ func TestProtocolAndStateMachineDocsCoverCoreContractRules(t *testing.T) {
 	protocolContent := string(protocolData)
 
 	protocolSnippets := []string{
-		"/run/lb/request.sock",
-		"/run/lb/review.sock",
+		"/run/request-sudo/request.sock",
+		"/run/request-sudo/review.sock",
 		"The requester socket and review socket must never be treated as equivalent.",
 		"request.execute",
 		"must never launch a second execve for the same request",
@@ -229,9 +229,9 @@ func TestPhase1ReviewAndVerificationDocsCoverGuardrails(t *testing.T) {
 	reviewContent := string(reviewData)
 
 	reviewSnippets := []string{
-		"`lbd` is the only writer for durable state",
-		"/run/lb/request.sock",
-		"/run/lb/review.sock",
+		"`request-sudod` is the only writer for durable state",
+		"/run/request-sudo/request.sock",
+		"/run/request-sudo/review.sock",
 		"Do not collapse both paths into one listener",
 		"No plugin-first path",
 	}
@@ -274,7 +274,7 @@ func TestSmokePathDocumentCoversRecoveryAndNonGoals(t *testing.T) {
 		"recovery_marked_failed",
 		"remote approval transport",
 		"plugin-mediated request capture",
-		"second `lb execute req_<opaque>` does not run another command",
+		"second `request-sudo execute req_<opaque>` does not run another command",
 	}
 
 	for _, snippet := range requiredSnippets {
@@ -286,10 +286,10 @@ func TestSmokePathDocumentCoversRecoveryAndNonGoals(t *testing.T) {
 
 func TestSmokePathFixtureMatchesFrozenDesign(t *testing.T) {
 	smoke := readJSON[smokePath](t, "testdata/smoke/local_manual_approval.json")
-	if smoke.Sockets.Request != "/run/lb/request.sock" {
+	if smoke.Sockets.Request != "/run/request-sudo/request.sock" {
 		t.Fatalf("unexpected requester socket: %q", smoke.Sockets.Request)
 	}
-	if smoke.Sockets.Review != "/run/lb/review.sock" {
+	if smoke.Sockets.Review != "/run/request-sudo/review.sock" {
 		t.Fatalf("unexpected review socket: %q", smoke.Sockets.Review)
 	}
 	if len(smoke.Steps) != 4 {
@@ -299,10 +299,10 @@ func TestSmokePathFixtureMatchesFrozenDesign(t *testing.T) {
 	expected := []struct {
 		Name, Actor, Socket string
 	}{
-		{"submit_request", "requester", "/run/lb/request.sock"},
-		{"review_request", "approver", "/run/lb/review.sock"},
-		{"execute_request", "requester", "/run/lb/request.sock"},
-		{"verify_audit_and_recovery", "operator", "/run/lb/review.sock"},
+		{"submit_request", "requester", "/run/request-sudo/request.sock"},
+		{"review_request", "approver", "/run/request-sudo/review.sock"},
+		{"execute_request", "requester", "/run/request-sudo/request.sock"},
+		{"verify_audit_and_recovery", "operator", "/run/request-sudo/review.sock"},
 	}
 
 	for i, step := range smoke.Steps {

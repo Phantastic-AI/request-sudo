@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"lease-broker-successor/internal/core"
-	"lease-broker-successor/internal/events"
+	"request-sudo/internal/core"
+	"request-sudo/internal/events"
 )
 
 func TestLogAppendAndReplayMaintainsHashChain(t *testing.T) {

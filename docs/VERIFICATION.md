@@ -85,7 +85,7 @@ go test -run Smoke ./...
 ```
 
 The first step validates the frozen JSON fixture contracts under `tests/contracts/`.
-Then run the manual smoke path from `docs/SMOKE_PATH.md` against a temporary runtime directory once `cmd/lb` and `cmd/lbd` exist.
+Then run the manual smoke path from `docs/SMOKE_PATH.md` against a temporary runtime directory once `cmd/request-sudo` and `cmd/request-sudod` exist.
 
 ## Verification evidence template
 

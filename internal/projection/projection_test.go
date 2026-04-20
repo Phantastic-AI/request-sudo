@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"lease-broker-successor/internal/core"
-	"lease-broker-successor/internal/events"
-	"lease-broker-successor/internal/projection"
+	"request-sudo/internal/core"
+	"request-sudo/internal/events"
+	"request-sudo/internal/projection"
 )
 
 func TestProjectionAppliesHappyPath(t *testing.T) {

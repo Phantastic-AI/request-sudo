@@ -9,9 +9,9 @@ import (
 	"os/user"
 	"time"
 
-	"lease-broker-successor/internal/core"
-	"lease-broker-successor/internal/protocol"
-	"lease-broker-successor/internal/socket"
+	"request-sudo/internal/core"
+	"request-sudo/internal/protocol"
+	"request-sudo/internal/socket"
 )
 
 func main() {
@@ -33,7 +33,7 @@ func main() {
 
 func handleApprove(ctx context.Context, args []string) {
 	fs := flag.NewFlagSet("approve", flag.ExitOnError)
-	socketPath := fs.String("socket", "/run/lb/review.sock", "review socket path")
+	socketPath := fs.String("socket", "/run/request-sudo/review.sock", "review socket path")
 	approverKind := fs.String("approver-kind", "local", "approver identity kind")
 	approverID := fs.String("approver-id", currentUser(), "approver identity id")
 	totp := fs.String("totp", "", "optional TOTP code")
@@ -50,7 +50,7 @@ func handleApprove(ctx context.Context, args []string) {
 
 func handleDeny(ctx context.Context, args []string) {
 	fs := flag.NewFlagSet("deny", flag.ExitOnError)
-	socketPath := fs.String("socket", "/run/lb/review.sock", "review socket path")
+	socketPath := fs.String("socket", "/run/request-sudo/review.sock", "review socket path")
 	approverKind := fs.String("approver-kind", "local", "approver identity kind")
 	approverID := fs.String("approver-id", currentUser(), "approver identity id")
 	reason := fs.String("reason", "Denied by approver", "denial reason")
@@ -82,7 +82,7 @@ func printJSON(v any) {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: lbctl <approve|deny> [args]")
+	fmt.Fprintln(os.Stderr, "usage: request-sudoctl <approve|deny> [args]")
 	os.Exit(2)
 }
 

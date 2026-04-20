@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"sort"
 
-	"lease-broker-successor/internal/core"
-	"lease-broker-successor/internal/events"
+	"request-sudo/internal/core"
+	"request-sudo/internal/events"
 )
 
 type Projection struct {

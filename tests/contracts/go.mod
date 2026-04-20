@@ -1,3 +1,3 @@
-module lease-broker-successor/tests/contracts
+module request-sudo/tests/contracts
 
 go 1.19

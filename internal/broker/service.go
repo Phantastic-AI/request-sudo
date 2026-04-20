@@ -14,11 +14,11 @@ import (
 	"sync"
 	"time"
 
-	"lease-broker-successor/internal/core"
-	"lease-broker-successor/internal/events"
-	"lease-broker-successor/internal/execution"
-	"lease-broker-successor/internal/projection"
-	"lease-broker-successor/internal/protocol"
+	"request-sudo/internal/core"
+	"request-sudo/internal/events"
+	"request-sudo/internal/execution"
+	"request-sudo/internal/projection"
+	"request-sudo/internal/protocol"
 )
 
 const DefaultTTL = 5 * time.Minute
@@ -260,7 +260,7 @@ func (s *Service) Execute(ctx context.Context, requestID string) (protocol.Respo
 		s.mu.Unlock()
 		return protocol.Response{}, err
 	}
-	startedEvent, err := s.log.Append(events.Event{RequestID: requestID, Actor: core.Actor{Kind: "broker", ID: "lbd"}, Type: events.TypeExecutionStarted, Details: startedDetails})
+	startedEvent, err := s.log.Append(events.Event{RequestID: requestID, Actor: core.Actor{Kind: "broker", ID: "request-sudod"}, Type: events.TypeExecutionStarted, Details: startedDetails})
 	if err != nil {
 		s.mu.Unlock()
 		return protocol.Response{}, err
@@ -286,7 +286,7 @@ func (s *Service) Execute(ctx context.Context, requestID string) (protocol.Respo
 
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	finalEvent, err := s.log.Append(events.Event{RequestID: requestID, Actor: core.Actor{Kind: "broker", ID: "lbd"}, Type: finalType, Details: resultDetails})
+	finalEvent, err := s.log.Append(events.Event{RequestID: requestID, Actor: core.Actor{Kind: "broker", ID: "request-sudod"}, Type: finalType, Details: resultDetails})
 	if err != nil {
 		return protocol.Response{}, err
 	}
@@ -305,7 +305,7 @@ func (s *Service) expireIfNeededLocked(requestID string) error {
 	if s.now().Before(snap.Request.ExpiresAt) {
 		return nil
 	}
-	event, err := s.log.Append(events.Event{RequestID: requestID, Actor: core.Actor{Kind: "broker", ID: "lbd"}, Type: events.TypeRequestExpired})
+	event, err := s.log.Append(events.Event{RequestID: requestID, Actor: core.Actor{Kind: "broker", ID: "request-sudod"}, Type: events.TypeRequestExpired})
 	if err != nil {
 		return err
 	}
@@ -321,7 +321,7 @@ func (s *Service) recoverExecutingLocked() error {
 		if err != nil {
 			return err
 		}
-		event, err := s.log.Append(events.Event{RequestID: snap.Request.ID, Actor: core.Actor{Kind: "broker", ID: "lbd"}, Type: events.TypeRecoveryMarkedFailed, Details: details})
+		event, err := s.log.Append(events.Event{RequestID: snap.Request.ID, Actor: core.Actor{Kind: "broker", ID: "request-sudod"}, Type: events.TypeRecoveryMarkedFailed, Details: details})
 		if err != nil {
 			return err
 		}

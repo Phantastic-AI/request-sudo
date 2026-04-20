@@ -1,4 +1,4 @@
-# Lease Broker Successor — State Machine
+# request-sudo — State Machine
 
 _Last updated: 2026-04-20 UTC_
 

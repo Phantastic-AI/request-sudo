@@ -1,4 +1,4 @@
-# Lease Broker Successor — Architecture Outline
+# request-sudo — Architecture Outline
 
 _Last updated: 2026-04-20 UTC_
 
@@ -19,13 +19,13 @@ The exact action runs once if approved.
 Primary form:
 
 ```bash
-request sudo systemctl restart app-moltpod-backend
+request-sudo systemctl restart app-moltpod-backend
 ```
 
 Optional explicit form:
 
 ```bash
-lb request -- systemctl restart app-moltpod-backend
+request-sudo request -- systemctl restart app-moltpod-backend
 ```
 
 ### Approval UX
@@ -62,7 +62,7 @@ Requester gets:
 
 ## 4. Main components
 
-### A. `request` / `lb` CLI
+### A. `request` / `request-sudo` CLI
 Purpose:
 - submit requests
 - check status
@@ -71,7 +71,7 @@ Purpose:
 Language:
 - Go
 
-### B. `lbd` broker daemon
+### B. `request-sudod` broker daemon
 Purpose:
 - local trust boundary
 - request recording
@@ -119,7 +119,7 @@ Safe to rebuild from event log.
 Use a **Unix domain socket**.
 
 Example path:
-- `/run/lb/request.sock`
+- `/run/request-sudo/request.sock`
 
 Why:
 - local-only
@@ -349,8 +349,8 @@ Suggested:
 sudo-lease-broker/
   cmd/
     lb/
-    lbd/
-    lbctl/
+    request-sudod/
+    request-sudoctl/
   internal/
     protocol/
     socket/
@@ -374,12 +374,12 @@ sudo-lease-broker/
 
 Start here:
 
-1. `lb request -- <argv...>`
+1. `request-sudo request -- <argv...>`
 2. send structured request over Unix socket
 3. broker returns `request_id` + `pending`
-4. `lb status <id>` works
-5. `lbctl approve <id>` works
-6. `lb execute <id>` runs exact argv once if approved
+4. `request-sudo status <id>` works
+5. `request-sudoctl approve <id>` works
+6. `request-sudo execute <id>` runs exact argv once if approved
 
 That is the first real end-to-end seam.
 

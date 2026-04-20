@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"lease-broker-successor/internal/core"
+	"request-sudo/internal/core"
 )
 
 const (

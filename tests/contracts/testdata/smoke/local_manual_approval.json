@@ -1,14 +1,14 @@
 {
   "name": "local-manual-approval-happy-path",
   "sockets": {
-    "request": "/run/lb/request.sock",
-    "review": "/run/lb/review.sock"
+    "request": "/run/request-sudo/request.sock",
+    "review": "/run/request-sudo/review.sock"
   },
   "steps": [
     {
       "name": "submit_request",
       "actor": "requester",
-      "socket": "/run/lb/request.sock",
+      "socket": "/run/request-sudo/request.sock",
       "action": "request.submit",
       "expected_status": "pending",
       "emits_event": "request_created"
@@ -16,14 +16,14 @@
     {
       "name": "review_request",
       "actor": "approver",
-      "socket": "/run/lb/review.sock",
+      "socket": "/run/request-sudo/review.sock",
       "expected_status": "approved",
       "emits_event": "request_approved"
     },
     {
       "name": "execute_request",
       "actor": "requester",
-      "socket": "/run/lb/request.sock",
+      "socket": "/run/request-sudo/request.sock",
       "action": "request.execute",
       "expected_status": "executed",
       "emits_event": "execution_started"
@@ -31,7 +31,7 @@
     {
       "name": "verify_audit_and_recovery",
       "actor": "operator",
-      "socket": "/run/lb/review.sock",
+      "socket": "/run/request-sudo/review.sock",
       "expected_status": "executed",
       "emits_event": "execution_succeeded"
     }

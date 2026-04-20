@@ -9,9 +9,9 @@ A machine-readable version of this path also lives at `tests/contracts/testdata/
 
 ## Preconditions
 
-- `lbd` is running as root or under an equivalent local test harness
-- request socket exists at `/run/lb/request.sock`
-- review socket exists at `/run/lb/review.sock`
+- `request-sudod` is running as root or under an equivalent local test harness
+- request socket exists at `/run/request-sudo/request.sock`
+- review socket exists at `/run/request-sudo/review.sock`
 - a writable append-only event log path is configured
 - projection rebuild uses only the event log as source of truth
 
@@ -27,10 +27,10 @@ Requester reads the result.
 Conceptual CLI:
 
 ```bash
-lb request -- systemctl restart app-moltpod-backend
+request-sudo request -- systemctl restart app-moltpod-backend
 ```
 
-Expected request payload on `/run/lb/request.sock`:
+Expected request payload on `/run/request-sudo/request.sock`:
 
 ```json
 {
@@ -59,7 +59,7 @@ Expected durable effect:
 
 ## Step 2: review request
 
-Conceptual local review tool action on `/run/lb/review.sock`:
+Conceptual local review tool action on `/run/request-sudo/review.sock`:
 
 - fetch pending request details
 - show requester, host, exact action, human-readable explanation, risk/effect summary
@@ -78,10 +78,10 @@ Expected durable effect for approve:
 Conceptual CLI:
 
 ```bash
-lb execute req_<opaque>
+request-sudo execute req_<opaque>
 ```
 
-Expected request payload on `/run/lb/request.sock`:
+Expected request payload on `/run/request-sudo/request.sock`:
 
 ```json
 {
@@ -103,7 +103,7 @@ Expected durable effects:
 Conceptual CLI:
 
 ```bash
-lb status req_<opaque>
+request-sudo status req_<opaque>
 ```
 
 Expected final response shape:
@@ -124,7 +124,7 @@ The same request must not launch twice.
 
 Required smoke assertions:
 
-- a second `lb execute req_<opaque>` does not run another command
+- a second `request-sudo execute req_<opaque>` does not run another command
 - a denied request never reaches `executing`
 - an expired request never reaches `approved`
 - recovery from an `executing` tail marks the request failed without re-running it

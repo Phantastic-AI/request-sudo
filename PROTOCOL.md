@@ -1,4 +1,4 @@
-# Lease Broker Successor — Protocol Contracts
+# request-sudo — Protocol Contracts
 
 _Last updated: 2026-04-20 UTC_
 
@@ -7,8 +7,8 @@ _Last updated: 2026-04-20 UTC_
 This document freezes the first concrete contracts for the successor.
 
 It answers:
-- what `lb` sends
-- what `lbd` returns
+- what `request-sudo` sends
+- what `request-sudod` returns
 - how approval is submitted
 - which socket does what
 - who is allowed to talk on which path
@@ -26,8 +26,8 @@ The point is simple:
 Use **Unix domain sockets**.
 
 ### Socket paths
-- requester socket: `/run/lb/request.sock`
-- review socket: `/run/lb/review.sock`
+- requester socket: `/run/request-sudo/request.sock`
+- review socket: `/run/request-sudo/review.sock`
 
 These are filesystem paths, but they are **sockets**, not normal files.
 
@@ -43,7 +43,7 @@ This keeps the requester from pretending to be the approver path.
 
 ## 3. Socket auth rules
 
-### `/run/lb/request.sock`
+### `/run/request-sudo/request.sock`
 Allowed callers:
 - normal local users
 - OpenClaw user
@@ -54,9 +54,9 @@ Broker checks:
 - peer gid
 - peer pid when available
 
-### `/run/lb/review.sock`
+### `/run/request-sudo/review.sock`
 Allowed callers:
-- `lbctl`
+- `request-sudoctl`
 - approved review/adapter service users only
 
 Broker checks:
@@ -78,7 +78,7 @@ The requester submits exact argv.
 Example conceptual call:
 
 ```bash
-lb request -- systemctl restart app-moltpod-backend
+request-sudo request -- systemctl restart app-moltpod-backend
 ```
 
 ### Submit payload
@@ -223,7 +223,7 @@ The requester never receives general privileged capability.
 
 ## 7. Review contract
 
-This is the approval path used by `lbctl` and later by adapters.
+This is the approval path used by `request-sudoctl` and later by adapters.
 
 ### Approve request
 
@@ -334,12 +334,12 @@ This is the key guarantee.
 
 ## 10. Single-writer rule
 
-`lbd` is the only canonical writer.
+`request-sudod` is the only canonical writer.
 
 That means:
-- only `lbd` appends canonical events
-- only `lbd` updates projection state
-- neither `lb`, `lbctl`, nor adapters mutate state directly
+- only `request-sudod` appends canonical events
+- only `request-sudod` updates projection state
+- neither `request-sudo`, `request-sudoctl`, nor adapters mutate state directly
 
 This keeps invariants sane.
 

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"lease-broker-successor/internal/core"
+	"request-sudo/internal/core"
 )
 
 type Executor interface {

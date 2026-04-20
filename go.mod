@@ -1,3 +1,3 @@
-module lease-broker-successor
+module request-sudo
 
 go 1.19

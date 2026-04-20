@@ -1,4 +1,4 @@
-# Lease Broker Successor
+# request-sudo
 
 _Last updated: 2026-04-19 UTC_
 
@@ -8,9 +8,9 @@ This should feel simple.
 
 A user or agent says something like:
 
-- `request sudo restart the backend`
-- `request sudo install jq`
-- `request sudo add this host entry`
+- `request-sudo restart the backend`
+- `request-sudo install jq`
+- `request-sudo add this host entry`
 
 The system then:
 1. turns that request into a clear human-readable explanation
@@ -91,7 +91,7 @@ The human should mostly not have to think about this layer.
 A requester says:
 
 ```bash
-request sudo systemctl restart app-moltpod-backend
+request-sudo systemctl restart app-moltpod-backend
 ```
 
 The system keeps the exact submitted argv as the thing that may run.
@@ -138,7 +138,7 @@ The normal model should be:
 Example shape:
 
 ```bash
-request sudo systemctl restart app-moltpod-backend
+request-sudo systemctl restart app-moltpod-backend
 # -> req_123 pending
 
 request status req_123
@@ -157,7 +157,7 @@ There should also be an optional blocking mode for humans or manual shells.
 Example:
 
 ```bash
-request sudo systemctl restart app-moltpod-backend --wait
+request-sudo systemctl restart app-moltpod-backend --wait
 ```
 
 That mode may:
@@ -370,7 +370,7 @@ Use the old broker repo as reference only.
 - `/srv/moltpod/security/openclaw-lease-broker`
 
 ### Current successor workspace
-- `/srv/moltpod/security/lease-broker-successor`
+- `/srv/moltpod/security/request-sudo`
 
 ### Recommended fresh repos
 - core repo: `sudo-lease-broker`
@@ -448,7 +448,7 @@ Does not hold requester-controlled secrets.
 A least-privilege test user can request:
 
 ```bash
-request sudo systemctl restart app-moltpod-backend
+request-sudo systemctl restart app-moltpod-backend
 ```
 
 A human sees a clean explanation.

@@ -12,9 +12,9 @@ import (
 	"sync"
 	"syscall"
 
-	"lease-broker-successor/internal/broker"
-	"lease-broker-successor/internal/core"
-	"lease-broker-successor/internal/protocol"
+	"request-sudo/internal/broker"
+	"request-sudo/internal/core"
+	"request-sudo/internal/protocol"
 )
 
 type Server struct {

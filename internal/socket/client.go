@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net"
 
-	"lease-broker-successor/internal/protocol"
+	"request-sudo/internal/protocol"
 )
 
 func Call(ctx context.Context, socketPath string, request protocol.Request) (protocol.Response, error) {

@@ -1,4 +1,4 @@
-# Lease Broker Successor — MVP Plan
+# request-sudo — MVP Plan
 
 _Last updated: 2026-04-19 UTC_
 
@@ -50,7 +50,7 @@ That is the product.
 Example:
 
 ```bash
-request sudo systemctl restart app-moltpod-backend
+request-sudo systemctl restart app-moltpod-backend
 ```
 
 ### Human-facing approval

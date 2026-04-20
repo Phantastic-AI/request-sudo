@@ -1,0 +1,6 @@
+{
+  "action": "request.submit",
+  "argv": ["systemctl", "restart", "app-moltpod-backend"],
+  "reason": "restart after deploy",
+  "mode": "poll"
+}

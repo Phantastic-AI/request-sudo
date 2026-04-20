@@ -1,0 +1,20 @@
+{
+  "allowed": [
+    ["pending", "approved"],
+    ["pending", "denied"],
+    ["pending", "expired"],
+    ["approved", "executing"],
+    ["approved", "revoked"],
+    ["executing", "executed"],
+    ["executing", "failed"]
+  ],
+  "forbidden": [
+    ["denied", "approved"],
+    ["executed", "approved"],
+    ["executed", "executing"],
+    ["expired", "approved"],
+    ["failed", "executing"],
+    ["revoked", "executing"],
+    ["executing", "revoked"]
+  ]
+}

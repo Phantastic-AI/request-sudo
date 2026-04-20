@@ -1,0 +1,24 @@
+# lease-broker-successor
+
+This is the clean successor workspace.
+
+Purpose:
+- design and build the next-generation lease broker as a standalone Linux CLI + local root-owned daemon
+- keep it separate from the current OpenClaw plugin implementation in `../openclaw-lease-broker`
+- treat `../openclaw-lease-broker-ops` as the legacy/current deployment-specific sibling once its remote is recovered or rebuilt
+
+Current source inputs:
+- current broker code: `../openclaw-lease-broker`
+- discovery notes: `../openclaw-lease-broker-ops/DISCOVERY.md`
+
+Phase 1 working docs:
+- frozen product/design inputs: `SPEC.md`, `PLAN.md`, `ARCHITECTURE_OUTLINE.md`, `PROTOCOL.md`, `STATE_MACHINE.md`
+- review guide: `docs/PHASE1_REVIEW.md`
+- smoke path: `docs/SMOKE_PATH.md`
+- verification scaffold: `docs/VERIFICATION.md`
+- current review findings: `docs/REVIEW_FINDINGS.md`
+
+Non-goals for v1 successor:
+- do not depend on current Airlock `/ssh/sign`
+- do not rely on passive filesystem hooks as the primary trigger path
+- do not copy runnable artifacts from discovery-one evidence

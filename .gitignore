@@ -1,0 +1,7 @@
+.omx/
+*.test
+coverage.out
+/bin/
+/dist/
+/tmp/
+.DS_Store

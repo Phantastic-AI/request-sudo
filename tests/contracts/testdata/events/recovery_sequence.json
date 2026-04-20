@@ -1,0 +1,8 @@
+{
+  "events": [
+    "request_created",
+    "request_approved",
+    "execution_started",
+    "recovery_marked_failed"
+  ]
+}

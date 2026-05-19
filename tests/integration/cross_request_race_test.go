@@ -50,7 +50,7 @@ func TestCrossRequestRace_SamePhoneR2Blocked(t *testing.T) {
 	if err := pset.OpenPending(phone, "req_R1"); err != nil {
 		t.Fatalf("R1 OpenPending should succeed: %v", err)
 	}
-	if _, err := twilio.SendVerificationSMS(ctx, phone, ""); err != nil {
+	if _, err := twilio.SendVerificationSMS(ctx, phone); err != nil {
 		t.Fatalf("R1 send: %v", err)
 	}
 
@@ -99,7 +99,7 @@ func TestCrossRequestRace_SamePhoneR2Blocked(t *testing.T) {
 	if err := pset.OpenPending(phone, "req_R2"); err != nil {
 		t.Fatalf("R2 retry should succeed after R1 release; got %v", err)
 	}
-	if _, err := twilio.SendVerificationSMS(ctx, phone, ""); err != nil {
+	if _, err := twilio.SendVerificationSMS(ctx, phone); err != nil {
 		t.Fatalf("R2 send: %v", err)
 	}
 

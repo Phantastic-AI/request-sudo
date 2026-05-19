@@ -76,14 +76,16 @@ With `executing`:
 
 ---
 
-## 5. Lease model
+## 5. Approval consumption model
 
-For MVP, treat approval as a one-time consumable execution grant attached to the request.
+Approval is a one-time consumable execution grant attached to the request.
 
 Externally and internally, the important truth is:
 - one request
 - one approval
 - one execution attempt
+
+Approvals are not reusable, not time-extensible, and not partially redeemable. See [ADR-0001](docs/adr/0001-drop-lease-terminology.md) for why request-sudo intentionally rejects lease semantics.
 
 ---
 

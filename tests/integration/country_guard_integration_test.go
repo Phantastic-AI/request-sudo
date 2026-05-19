@@ -83,7 +83,7 @@ func TestCountryGuard_BlocksNonAllowedCountry(t *testing.T) {
 	if err := pset.OpenPending(usPhone, "req_us"); err != nil {
 		t.Fatalf("OpenPending US phone: %v", err)
 	}
-	if _, err := twilio.SendVerificationSMS(ctx, usPhone, ""); err != nil {
+	if _, err := twilio.SendVerificationSMS(ctx, usPhone); err != nil {
 		t.Fatalf("send US phone: %v", err)
 	}
 	if calls := ft.CallsTo("/Verifications"); len(calls) != 1 {

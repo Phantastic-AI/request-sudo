@@ -196,7 +196,7 @@ func handlePending(
 		}
 
 		sendCtx, cancel := context.WithTimeout(ctx, 15*time.Second)
-		result, err := twilio.SendVerificationSMS(sendCtx, phone, "")
+		result, err := twilio.SendVerificationSMS(sendCtx, phone)
 		cancel()
 		if err != nil {
 			// Per ADR-0005 T25/T27, NEVER auto-retry. Log loudly + audit +

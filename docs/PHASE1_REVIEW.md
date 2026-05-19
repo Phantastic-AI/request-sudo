@@ -65,7 +65,8 @@ This is a review target, not a frozen source tree. Keep names close unless there
 
 ```text
 cmd/
-  lb/
+  request-sudo/
+  request-sudoctl/
   request-sudod/
 internal/
   approval/

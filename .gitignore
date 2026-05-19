@@ -6,3 +6,5 @@ coverage.out
 /tmp/
 .DS_Store
 .omc/
+.test-overnight/
+*.env

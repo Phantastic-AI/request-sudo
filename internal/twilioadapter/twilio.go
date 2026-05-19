@@ -50,20 +50,13 @@ type VerifySendResult struct {
 	DateCreated string `json:"date_created"`
 }
 
-// SendVerificationSMS sends an approval-prompt SMS via the Twilio Verify API.
-//
-// IMPORTANT: the customCode parameter is IGNORED. Under ADR-0005a, Twilio
-// owns the verification-code lifecycle (generation, expiry, single-use,
-// attempt counter). The adapter no longer composes the SMS body or supplies
-// a code; the code in the SMS is whatever Twilio generates server-side.
-// The customCode parameter is kept in the signature only to minimize ripple
-// across existing callers; it will be removed in a later cleanup.
-//
-// Returns the parsed Verifications result on success; returns an error (with
-// the raw response body for diagnostics) on any non-2xx. Per ADR-0005
-// T25/T27, the adapter NEVER auto-retries — caller decides.
-func (c *TwilioClient) SendVerificationSMS(ctx context.Context, to, customCode string) (VerifySendResult, error) {
-	_ = customCode // intentionally unused: Twilio owns the code under ADR-0005a
+// SendVerificationSMS sends an approval-prompt SMS via the Twilio Verify
+// API. Twilio owns the verification-code lifecycle (generation, expiry,
+// single-use, attempt counter) under ADR-0005a. Returns the parsed
+// Verifications result on success; returns an error (with the raw response
+// body for diagnostics) on any non-2xx. Per ADR-0005 T25/T27, the adapter
+// NEVER auto-retries — caller decides.
+func (c *TwilioClient) SendVerificationSMS(ctx context.Context, to string) (VerifySendResult, error) {
 	var result VerifySendResult
 	endpoint := fmt.Sprintf("%s/v2/Services/%s/Verifications", c.baseURL, url.PathEscape(c.cfg.VerifyServiceSID))
 

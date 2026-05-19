@@ -40,7 +40,7 @@ func TestSendVerificationSMS_PostsToVerifyEndpoint(t *testing.T) {
 	}
 	client := NewTwilioClient(cfg).WithBaseURL(srv.URL)
 
-	result, err := client.SendVerificationSMS(context.Background(), "+14155550123", "ignored-code")
+	result, err := client.SendVerificationSMS(context.Background(), "+14155550123")
 	if err != nil {
 		t.Fatalf("SendVerificationSMS: %v", err)
 	}
@@ -97,7 +97,7 @@ func TestSendVerificationSMS_NonSuccessReturnsError(t *testing.T) {
 		VerifyServiceSID: "VAtestservice",
 	}).WithBaseURL(srv.URL)
 
-	_, err := client.SendVerificationSMS(context.Background(), "+14155550123", "")
+	_, err := client.SendVerificationSMS(context.Background(), "+14155550123")
 	if err == nil {
 		t.Fatal("expected error on 400, got nil")
 	}
